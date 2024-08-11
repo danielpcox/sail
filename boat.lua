@@ -1,5 +1,5 @@
 -- boat.lua
-include "/sail/physics.lua"
+include "/sail/vectors.lua"
 
 function make_boat(x, y)
  return {

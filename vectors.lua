@@ -1,4 +1,4 @@
--- physics.lua
+-- vectors.lua
 
 function vec(x,y)
  return {x=x, y=y}

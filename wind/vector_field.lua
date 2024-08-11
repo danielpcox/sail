@@ -1,6 +1,6 @@
 --[[pod_format="raw",created="2024-08-11 02:06:31",modified="2024-08-11 02:07:06",revision=2]]
 -- vector_field.lua
-include "/sail/perlin.lua"
+include "/sail/wind/perlin.lua"
 
 -- Initialize Perlin noise with a seed
 local perlin = Perlin:new(1)
