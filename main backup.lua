@@ -41,21 +41,21 @@ function __init()
 end
 
 
-function get_wind_at_position(pos, vector_field, grid_size)
-    local closest_distance = math.huge
-    local closest_vector = nil
+-- function get_wind_at_position(pos, vector_field, grid_size)
+--     local closest_distance = math.huge
+--     local closest_vector = nil
 
-    for _, field in ipairs(vector_field) do
-        local distance = mag(minus(pos, field.pos))
-        if distance < closest_distance then
-            closest_distance = distance
-            closest_vector = field.vector
-        end
-    end
+--     for _, field in ipairs(vector_field) do
+--         local distance = mag(minus(pos, field.pos))
+--         if distance < closest_distance then
+--             closest_distance = distance
+--             closest_vector = field.vector
+--         end
+--     end
 
-    assert(closest_vector ~= nil, "No wind vector found for the given position")
-    return closest_vector
-end 
+--     assert(closest_vector ~= nil, "No wind vector found for the given position")
+--     return closest_vector
+-- end 
 
 
 function __update()
