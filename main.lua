@@ -1,4 +1,4 @@
---[[pod_format="raw",created="2024-08-11 02:06:02",modified="2024-08-11 02:07:39",revision=2]]
+--[[pod_format="raw",created="2024-08-11 02:06:02",modified="2024-08-11 02:10:31",revision=3]]
 -- main.lua
 include "/sail/physics.lua"
 include "/sail/boat.lua"
@@ -72,18 +72,18 @@ function __update()
     vector_field = generate_vector_field(screen_width, screen_height, boats, {}, wind_config, time())
     
     -- Get wind vector at the boat's position
-    local wind = get_wind_at_position(boat.pos, vector_field)
+    wind_at_player = get_wind_at_position(boat.pos, vector_field)
       
     -- Assert that wind vector is valid
-    assert(wind.x ~= nil and wind.y ~= nil, "Wind vector components must not be nil")
-    assert(type(wind.x) == "number" and type(wind.y) == "number", "Wind vector components must be numbers")
+    assert(wind_at_player.x ~= nil and wind_at_player.y ~= nil, "Wind vector components must not be nil")
+    assert(type(wind_at_player.x) == "number" and type(wind_at_player.y) == "number", "Wind vector components must be numbers")
  
     -- compute thrust
     sail = a2v(boat.ang - boat.sail)
     orientation = a2v(boat.ang)
     
     -- TODO: better way to integrate vector field and boat motion
-    local boat_wind = {x = wind.x * 5, y = wind.y * 5}
+    local boat_wind = {x = wind_at_player.x * 5, y = wind_at_player.y * 5}
     thrust, sail_force = get_thrust(boat_wind, sail, boat.v, orientation)   
     
     -- Assert that thrust and sail_force are valid
@@ -158,6 +158,7 @@ function __draw()
     
     draw_particles()
     draw_boat()
-    draw_stats(boat, push_force, lift_mag, orientation)
-    -- draw_vector_field(vector_field, grid_size) -- Draw the vector field
+
+    draw_stats(boat, push_force, lift_mag, orientation, wind_at_player, thrust, pull_force, push_force, apparent)
+    draw_vector_field(vector_field, grid_size) -- Draw the vector field
 end
