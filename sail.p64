@@ -1,0 +1,54 @@
+picotron cartridge // www.picotron.net
+version 2
+
+:: gfx/
+:: gfx/.info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTA4LTA0IDE3OjQ0OjAxIixtb2RpZmllZD0iMjAyNC0w
+OC0xMSAwMToxMDowMyJdXWx6NAAEAAAAAwAAADBuaWw=
+:: gfx/0.gfx
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTA4LTA0IDE3OjQ0OjAyIixtb2RpZmllZD0iMjAyNC0w
+OC0xMSAwMToxMDowMyIscmV2aXNpb249MTM1N11dbHo0AK0AAABOMQAA8yF7WzBdPXtibXA9cHh1
+AEMgEBAE8FYHEAfAF9AXwAcQB-BWLGZsYWdzPTAscGFuX3gIAMp5PTAsem9vbT04fSw_APEFYB8U
+wA4QDqAOMA6ADlAOcA5QDmAGAEMwDxggEQAKBAATYAoAT4Be8AVtABwv8PAxAP--------------
+-------------------------------------------------6ZQbT04fX0=
+:: map/
+:: map/.info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTA4LTA0IDE3OjQ0OjAxIixtb2RpZmllZD0iMjAyNC0w
+OC0xMSAwMToxMDowMyJdXWx6NAAEAAAAAwAAADBuaWw=
+:: map/0.map
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTA4LTA0IDE3OjQ0OjAyIixtb2RpZmllZD0iMjAyNC0w
+OC0xMSAwMToxMDowMyIscmV2aXNpb249MTM0M11dbHo0AGsAAABbEAAA8Ah7e2JtcD11c2VyZGF0
+YSgiaTE2IiwzMgMALyIwAQD--------------------78QgiKSxoaWRkZW49ZmFsc2UscGFuX3g9
+MAgA0nk9MCx0aWxlX2g9MTYKABB3CgCwem9vbT0wLjI1fX0=
+:: sfx/
+:: sfx/.info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTA4LTA0IDE3OjQ0OjAxIixtb2RpZmllZD0iMjAyNC0w
+OC0xMSAwMToxMDowMyJdXWx6NAAEAAAAAwAAADBuaWw=
+:: sfx/0.sfx
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTA4LTA0IDE3OjQ0OjAyIixtb2RpZmllZD0iMjAyNC0w
+OC0xMSAwMToxMDowMyIscmV2aXNpb249MTM0MV1dbHo0AKAAAAALCgAA-zBweHUAAygAAAQABA9A
+EAIOAAGgASACoA4ADxAADfDKAQIDQA8PkAQFBgdADJAICQoLQAyQDwwPDQ8ODEAM8P8BAOv-J6oB
+EAYPIBABIAEgAfAAAhACDhABIA8hIAEwD0Dwww8oD--wxg-4Cg--D4AP9w8NAfAJARAGDjAA----
+--_9H-8BAKzPyA9AAA8QQP--sPD-AQD-6lD-----KQ==
+:: main.lua
+--[[pod_format="raw",created="2024-08-04 17:44:02",modified="2024-08-11 01:10:03",revision=2028]]
+include "/sail/main.lua"
+
+function _init()
+ __init()
+end
+
+function _update()
+ __update()
+end
+
+function _draw()
+ __draw()
+end
+:: .info.pod
+b64$LS1bW3BvZCxjcmVhdGVkPSIyMDI0LTA4LTA0IDE3OjQ4OjU5Iixtb2RpZmllZD0iMjAyNC0w
+OC0xMSAwMToxMDowMyIscnVudGltZT04LHdvcmtzcGFjZXM9e3tsb2NhdGlvbj0ibWFpbi5sdWEj
+MSIsd29ya3NwYWNlX2luZGV4PTF9LHtsb2NhdGlvbj0iZ2Z4LzAuZ2Z4Iix3b3Jrc3BhY2VfaW5k
+ZXg9Mn0se2xvY2F0aW9uPSJtYXAvMC5tYXAiLHdvcmtzcGFjZV9pbmRleD0zfSx7bG9jYXRpb249
+InNmeC8wLnNmeCIsd29ya3NwYWNlX2luZGV4PTR9fV1dbHo0AAQAAAADAAAAMG5pbA==
+:: [eoc]
