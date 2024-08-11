@@ -1,6 +1,6 @@
 -- particle_draw.lua
-include "/sail/particles.lua"
-include "/sail/vector_field.lua"
+include "/sail/wind/particles.lua"
+include "/sail/wind/vector_field.lua"
 
 -- Update Particles
 function update_particles(vector_field, screen_width, screen_height, boats)

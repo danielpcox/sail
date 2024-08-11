@@ -1,11 +1,12 @@
 --[[pod_format="raw",created="2024-08-11 02:06:02",modified="2024-08-11 02:10:31",revision=3]]
 -- main.lua
-include "/sail/physics.lua"
+include "/sail/vectors.lua"
 include "/sail/boat.lua"
-include "/sail/particles.lua"
-include "/sail/vector_field.lua"
-include "/sail/particle_draw.lua"
 include "/sail/stats.lua"
+
+include "/sail/wind/particles.lua"
+include "/sail/wind/vector_field.lua"
+include "/sail/wind/particle_draw.lua"
 
 -- TODO: Get display dimensions
 screen_width = 720
@@ -158,7 +159,6 @@ function __draw()
     
     draw_particles()
     draw_boat()
-
-    draw_stats(boat, push_force, lift_mag, orientation, wind_at_player, thrust, pull_force, push_force, apparent)
+    draw_stats(boat, push_force, lift_mag, orientation)
     draw_vector_field(vector_field, grid_size) -- Draw the vector field
 end
