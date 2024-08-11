@@ -1,3 +1,4 @@
+--[[pod_format="raw",created="2024-08-11 02:06:31",modified="2024-08-11 02:07:06",revision=2]]
 -- vector_field.lua
 include "/sail/perlin.lua"
 
@@ -5,10 +6,10 @@ include "/sail/perlin.lua"
 local perlin = Perlin:new(1)
 
 -- Gameplay and performance configuration
-local base_grid_size = 40 -- Base grid size for the vector field
-local high_res_grid_size = 20 -- High-resolution grid size around obstructions
+local base_grid_size = 60 -- Base grid size for the vector field
+local high_res_grid_size = 30 -- High-resolution grid size around obstructions
 local high_res_grid_radius = 50 -- Radius around obstructions for the high-resolution grid
-local influence_radius = 100 -- Radius of influence of the boat on the wind
+local influence_radius = 80 -- Radius of influence of the boat on the wind
 
 -- Function to vary the wind vector smoothly using Perlin noise
 local function vary_wind(wind, wind_config, time)

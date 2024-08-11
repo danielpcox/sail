@@ -1,3 +1,4 @@
+--[[pod_format="raw",created="2024-08-11 02:06:02",modified="2024-08-11 02:07:39",revision=2]]
 -- main.lua
 include "/sail/physics.lua"
 include "/sail/boat.lua"
@@ -81,7 +82,10 @@ function __update()
     -- compute thrust
     sail = a2v(boat.ang - boat.sail)
     orientation = a2v(boat.ang)
-    thrust, sail_force = get_thrust(wind, sail, boat.v, orientation)
+    
+    -- TODO: better way to integrate vector field and boat motion
+    local boat_wind = {x = wind.x * 5, y = wind.y * 5}
+    thrust, sail_force = get_thrust(boat_wind, sail, boat.v, orientation)   
     
     -- Assert that thrust and sail_force are valid
     assert(thrust.x ~= nil and thrust.y ~= nil, "Thrust vector components must not be nil")
