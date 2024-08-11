@@ -10,7 +10,10 @@ screen_width = 720
 screen_height = 480
 
 function __init()
-    boats = { make_boat(120, 135) }
+    -- Place the boat in the center of the screen
+    local initial_boat_x = screen_width / 2
+    local initial_boat_y = screen_height / 2
+    boats = { make_boat(initial_boat_x, initial_boat_y) }
     drag = 0.3 -- scale by which velocity decays per step
     init_vector_field()
     -- add_obstruction(boats[1].pos.x, boats[1].pos.y, 2) -- Add initial obstruction for the boat
@@ -95,11 +98,11 @@ function __draw()
     local boat = boats[1]  -- Assuming we are working with the first boat for now
 
     -- Center the camera on the boat
-    camera(boat.pos.x - 240, boat.pos.y - 135)
+    camera(boat.pos.x - screen_width / 2, boat.pos.y - screen_height / 2)
     
     -- Draw a rectangle filling the screen, relative to the boat's position
     rectfill(boat.pos.x - screen_width / 2, boat.pos.y - screen_height / 2, boat.pos.x + screen_width / 2, boat.pos.y + screen_height / 2, Colors.dark_blue)
 
-    draw_boat()
     draw_vector_field()
+    draw_boat()
 end
