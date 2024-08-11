@@ -3,7 +3,6 @@
 include "/sail/physics.lua"
 include "/sail/boat.lua"
 include "/sail/particles.lua"
-include "/sail/background.lua"
 include "/sail/vector_field.lua"
 include "/sail/particle_draw.lua"
 include "/sail/stats.lua"
