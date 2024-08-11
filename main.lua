@@ -4,19 +4,13 @@ include "/sail/wind/particle_draw.lua"
 include "/sail/vectors.lua"
 include "/sail/boat.lua"
 include "/sail/stats.lua"
-
--- TODO: Get display dimensions
-screen_width = 720
-screen_height = 480
+include "/sail/coords.lua"
 
 function __init()
     -- Place the boat in the center of the screen
-    local initial_boat_x = screen_width / 2
-    local initial_boat_y = screen_height / 2
-    boats = { make_boat(initial_boat_x, initial_boat_y) }
+    boats = { make_boat(coords.screen.cx, coords.screen.cy) }
     drag = 0.3 -- scale by which velocity decays per step
     init_vector_field()
-    -- add_obstruction(boats[1].pos.x, boats[1].pos.y, 2) -- Add initial obstruction for the boat
 end
 
 function __update()
@@ -77,10 +71,10 @@ function __update()
     boat.v = scale(drag, boat.v)
     assert(type(boat.pos.x) == "number" and type(boat.pos.y) == "number", "Boat position must be numbers")
 
-    -- Update the position of the obstruction to follow the boat
-    -- update_obstruction_position(obstructions[1], boat.pos.x, boat.pos.y)
-
     update_vector_field()
+
+    -- Update coordinate offsets based on boat position
+    coords = update_coord_offsets(coords, boat.pos)
 end
 
 function draw_boat()
@@ -96,12 +90,12 @@ end
 function __draw()
     cls()
     local boat = boats[1]  -- Assuming we are working with the first boat for now
-
-    -- Center the camera on the boat
-    camera(boat.pos.x - screen_width / 2, boat.pos.y - screen_height / 2)
     
-    -- Draw a rectangle filling the screen, relative to the boat's position
-    rectfill(boat.pos.x - screen_width / 2, boat.pos.y - screen_height / 2, boat.pos.x + screen_width / 2, boat.pos.y + screen_height / 2, Colors.dark_blue)
+    -- Center the camera on the boat
+    camera(boat.pos.x - coords.screen.width / 2, boat.pos.y - coords.screen.height / 2)
+    
+    -- Draw a rectangle filling the screen, using world coordinates
+    rectfill(boat.pos.x - coords.screen.width / 2, boat.pos.y - coords.screen.height / 2, boat.pos.x + coords.screen.width / 2, boat.pos.y + coords.screen.height / 2, Colors.dark_blue)
 
     draw_vector_field()
     draw_boat()

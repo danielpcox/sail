@@ -1,5 +1,6 @@
 -- vector_field2.lua
 include "/sail/wind/perlin.lua"
+include "/sail/coords.lua"
 
 -- Initialize the Perlin noise generator
 local perlin = Perlin:new(time())
@@ -15,9 +16,10 @@ obstructions = {}
 local screen_width = 720
 local screen_height = 480
 local margin = 5 -- Number of cells to keep as a buffer around the visible area
-local cell_size = 32 -- Size of each cell in pixels
+cell_size = 32 -- Size of each cell in pixels
 local grid_width = math.ceil(screen_width / cell_size) + 2 * margin
 local grid_height = math.ceil(screen_height / cell_size) + 2 * margin
+
 
 -- Initialize the vector field
 function init_vector_field()
@@ -39,30 +41,27 @@ function draw_vector_field()
     local cam_x = boat.pos.x - screen_width / 2
     local cam_y = boat.pos.y - screen_height / 2
 
-    for y = 1, grid_height do
-        for x = 1, grid_width do
-            local vec = vector_field[y][x]
-            assert(vec.x ~= nil and vec.y ~= nil, "Vector field components must not be nil")
-            assert(type(vec.x) == "number" and type(vec.y) == "number", "Vector field components must be numbers")
-            local start_x = (x - 1) * cell_size - cam_x
-            local start_y = (y - 1) * cell_size - cam_y
-            local end_x = start_x + vec.x * cell_size / 2
-            local end_y = start_y + vec.y * cell_size / 2
+    for grid_y = 1, grid_height do
+        for grid_x = 1, grid_width do
+            local vec = vector_field[grid_y][grid_x]
+            local world_x, world_y = grid_to_world_coords(grid_x, grid_y, cell_size)
+            local screen_x, screen_y = world_to_screen_coords(world_x, world_y, cam_x, cam_y)
+            local end_x = screen_x + vec.x * cell_size / 2
+            local end_y = screen_y + vec.y * cell_size / 2
             local color = 7
             if vec.x == 0 and vec.y == 0 then
                 color = 8 -- Highlight the shadowed area
             end
-
-            line(start_x, start_y, end_x, end_y, color) -- Draw the vector as a line
+            line(screen_x, screen_y, end_x, end_y, color) -- Draw the vector as a line
         end
     end
 end
 
 
 -- Function to get wind at a specific position
-function get_wind_at(x, y)
-    local grid_x = math.floor(x / cell_size) + 1
-    local grid_y = math.floor(y / cell_size) + 1
+function get_wind_at(world_x, world_y)
+    assert(type(world_x) == "number" and type(world_y) == "number", "World X and World Y must be numbers")
+    local grid_x, grid_y = world_to_grid_coords(world_x, world_y)
 
     -- Adjust grid coordinates if they are out of bounds
     if grid_x < 1 then grid_x = 1 end
