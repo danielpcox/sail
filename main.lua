@@ -80,11 +80,12 @@ end
 function draw_boat()
     local boat = boats[1]  -- Assuming we are working with the first boat for now
     show(scale(10, orientation), boat.pos.x, boat.pos.y, 4)
-    show(scale(7, sail), boat.pos.x + 10 * orientation.x, boat.pos.y + 10 * orientation.y, 6)
-    show(scale(10, thrust), 400, 200, 3)
-    show(scale(10, pull_force), 400, 220, 8)
-    show(scale(10, push_force), 400, 220, 9)
-    show(scale(10, apparent), 400, 240, 28)
+    show(scale(7, sail),        boat.pos.x + 10 * orientation.x, boat.pos.y + 10 * orientation.y, 6)
+    -- 
+    show(scale(10, thrust),     coords.screen.x + 10, coords.screen.y + 10 * 1, 3)
+    show(scale(10, pull_force), coords.screen.x + 10, coords.screen.y + 10 * 2, 8)
+    show(scale(10, push_force), coords.screen.x + 10, coords.screen.y + 10 * 3, 9)
+    show(scale(10, apparent),   coords.screen.x + 10, coords.screen.y + 10 * 4, 28)
 end
 
 function __draw()
