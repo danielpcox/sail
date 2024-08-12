@@ -94,27 +94,35 @@ function draw_boat()
 end
 
 function draw_world_grid()
-    local camera_x = coords.camera.x
-    local camera_y = coords.camera.y
-    local screen_width = coords.screen.width
-    local screen_height = coords.screen.height
+    local ins = 20
 
-    -- Calculate the range of world coordinates that are visible on the screen
-    local min_world_x = math.floor(camera_x / cell_size) * cell_size
-    local max_world_x = math.ceil((camera_x + screen_width) / cell_size) * cell_size
-    local min_world_y = math.floor(camera_y / cell_size) * cell_size
-    local max_world_y = math.ceil((camera_y + screen_height) / cell_size) * cell_size
+    local camera_x = coords.camera.x + ins
+    local camera_y = coords.camera.y + ins
+    local screen_width = coords.screen.width - (ins * 2)
+    local screen_height = coords.screen.height - (ins * 2)
+
+    -- Calculate the range of WORLD coordinates that are visible on the screen
+    local min_world_x = camera_x
+    local max_world_x = camera_x + screen_width
+    local min_world_y = camera_y
+    local max_world_y = camera_y + screen_height
+    
+    -- Calculate the range of WORLD GRID coordinates that are visible on the screen
+    local min_world_grid_x = math.floor(min_world_x / cell_size) * cell_size
+    local max_world_grid_x = math.ceil(max_world_x / cell_size) * cell_size
+    local min_world_grid_y = math.floor(min_world_y / cell_size) * cell_size
+    local max_world_grid_y = math.ceil(max_world_y / cell_size) * cell_size
 
     -- Draw vertical grid lines
-    for x = min_world_x, max_world_x, cell_size do
-        local screen_x = x - camera_x
-        line(screen_x, camera_y, screen_x, screen_height, 7) -- Draw vertical line
+    for x = min_world_grid_x, max_world_grid_x, cell_size do
+        local screen_x = x
+        line(screen_x, camera_y, screen_x, max_world_grid_y, 0) -- Draw vertical line
     end
 
     -- Draw horizontal grid lines
-    for y = min_world_y, max_world_y, cell_size do
-        local screen_y = y - camera_y
-        line(camera_x, screen_y, screen_width, screen_y, 7) -- Draw horizontal line
+    for y = min_world_grid_y, max_world_grid_y, cell_size do
+        local screen_y = y
+        line(camera_x, screen_y, max_world_grid_x, screen_y, 0) -- Draw horizontal line
     end
 end
 
