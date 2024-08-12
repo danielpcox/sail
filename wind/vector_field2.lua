@@ -1,6 +1,9 @@
 -- vector_field2.lua
 include "/sail/wind/perlin.lua"
 include "/sail/coords.lua"
+include "/sail/wind/perlin.lua"
+include "/sail/coords.lua"
+
 
 -- Initialize the Perlin noise generator
 local perlin = Perlin:new(time())
@@ -13,13 +16,10 @@ local base_intensity = 1.5
 obstructions = {}
 
 -- Define the grid size
-local screen_width = 720
-local screen_height = 480
 local margin = 5 -- Number of cells to keep as a buffer around the visible area
 cell_size = 32 -- Size of each cell in pixels
-local grid_width = math.ceil(screen_width / cell_size) + 2 * margin
-local grid_height = math.ceil(screen_height / cell_size) + 2 * margin
-
+local grid_width = math.ceil(coords.screen.width / cell_size) + 2 * margin
+local grid_height = math.ceil(coords.screen.height / cell_size) + 2 * margin
 
 -- Initialize the vector field
 function init_vector_field()
@@ -34,17 +34,29 @@ function init_vector_field()
     end
 end
 
-
 -- Function to draw the vector field
 function draw_vector_field()
-    local boat = boats[1]
-    local cam_x = boat.pos.x - screen_width / 2
-    local cam_y = boat.pos.y - screen_height / 2
+    local cam_x = coords.camera.x
+    local cam_y = coords.camera.y
 
-    for grid_y = 1, grid_height do
-        for grid_x = 1, grid_width do
+    -- Calculate the range of grid cells that are visible on the screen
+    local min_grid_x = math.floor(cam_x / cell_size) + 1
+    local max_grid_x = math.floor((cam_x + coords.screen.width) / cell_size) + 1
+    local min_grid_y = math.floor(cam_y / cell_size) + 1
+    local max_grid_y = math.floor((cam_y + coords.screen.width) / cell_size) + 1
+
+    -- Ensure the grid coordinates are within bounds
+    min_grid_x = math.max(min_grid_x, 1)
+    max_grid_x = math.min(max_grid_x, grid_width)
+    min_grid_y = math.max(min_grid_y, 1)
+    max_grid_y = math.min(max_grid_y, grid_height)
+
+    -- Iterate over the visible grid cells
+    for grid_y = min_grid_y, max_grid_y do
+        for grid_x = min_grid_x, max_grid_x do
             local vec = vector_field[grid_y][grid_x]
-            local world_x, world_y = grid_to_world_coords(grid_x, grid_y, cell_size)
+            local world_x = (grid_x - 1) * cell_size
+            local world_y = (grid_y - 1) * cell_size
             local screen_x, screen_y = world_to_screen_coords(world_x, world_y, cam_x, cam_y)
             local end_x = screen_x + vec.x * cell_size / 2
             local end_y = screen_y + vec.y * cell_size / 2
@@ -57,11 +69,11 @@ function draw_vector_field()
     end
 end
 
-
 -- Function to get wind at a specific position
 function get_wind_at(world_x, world_y)
     assert(type(world_x) == "number" and type(world_y) == "number", "World X and World Y must be numbers")
-    local grid_x, grid_y = world_to_grid_coords(world_x, world_y)
+    local grid_x = math.floor(world_x / cell_size) + 1
+    local grid_y = math.floor(world_y / cell_size) + 1
 
     -- Adjust grid coordinates if they are out of bounds
     if grid_x < 1 then grid_x = 1 end
@@ -71,7 +83,6 @@ function get_wind_at(world_x, world_y)
 
     return vector_field[grid_y][grid_x]
 end
-
 
 function apply_wind_shadow(obs, wind_direction)
     local grid_x = math.floor(obs.x / cell_size) + 1
@@ -110,7 +121,6 @@ function apply_wind_shadow(obs, wind_direction)
     end
 end
 
--- Function to update the vector field
 function update_vector_field()
     local time = t() * 0.1
     local noise_value_direction = perlin:noise(time, 0)
@@ -122,9 +132,8 @@ function update_vector_field()
     local current_intensity = base_intensity * intensity_variation
 
     -- Extend the vector field if the boat is near the edge
-    local boat = boats[1]
-    local grid_x = math.floor(boat.pos.x / cell_size) + 1
-    local grid_y = math.floor(boat.pos.y / cell_size) + 1
+    local grid_x = math.floor(coords.camera.x / cell_size) + 1
+    local grid_y = math.floor(coords.camera.y / cell_size) + 1
 
     local extend_margin = margin -- Number of cells to extend when near the edge
 
@@ -141,7 +150,7 @@ function update_vector_field()
     end
 
     -- Remove out-of-bounds cells
-    remove_out_of_bounds_cells(boat.pos.x, boat.pos.y)
+    remove_out_of_bounds_cells()
 
     -- Initialize the vector field with base wind direction and intensity
     for y = 1, grid_height do
@@ -160,33 +169,6 @@ function update_vector_field()
         apply_wind_shadow(obs, {x = math.cos(current_direction), y = math.sin(current_direction)})
     end
 end
-
-
-function remove_out_of_bounds_cells(boat_x, boat_y)
-    local min_x = math.floor((boat_x - screen_width / 2 - margin * cell_size) / cell_size) + 1
-    local max_x = math.floor((boat_x + screen_width / 2 + margin * cell_size) / cell_size) + 1
-    local min_y = math.floor((boat_y - screen_height / 2 - margin * cell_size) / cell_size) + 1
-    local max_y = math.floor((boat_y + screen_height / 2 + margin * cell_size) / cell_size) + 1
-
-    -- Remove rows outside the bounds
-    while grid_height > 0 and (grid_height < min_y or grid_height > max_y) do
-        table.remove(vector_field, grid_height)
-        grid_height = grid_height - 1
-    end
-
-    -- Remove columns outside the bounds
-    for y = 1, grid_height do
-        while #vector_field[y] > 0 and (#vector_field[y] < min_x or #vector_field[y] > max_x) do
-            table.remove(vector_field[y], #vector_field[y])
-        end
-    end
-
-    -- Adjust grid width
-    grid_width = #vector_field[1]
-end
-
-
-
 
 function extend_vector_field(direction)
     if direction == "left" then
@@ -216,12 +198,11 @@ function extend_vector_field(direction)
     end
 end
 
-
-function remove_out_of_bounds_cells(boat_x, boat_y)
-    local min_x = math.floor((boat_x - screen_width / 2 - margin * cell_size) / cell_size) + 1
-    local max_x = math.floor((boat_x + screen_width / 2 + margin * cell_size) / cell_size) + 1
-    local min_y = math.floor((boat_y - screen_height / 2 - margin * cell_size) / cell_size) + 1
-    local max_y = math.floor((boat_y + screen_height / 2 + margin * cell_size) / cell_size) + 1
+function remove_out_of_bounds_cells()
+    local min_x = math.floor((coords.camera.x - margin * cell_size) / cell_size) + 1
+    local max_x = math.floor((coords.camera.x + coords.screen.width + margin * cell_size) / cell_size) + 1
+    local min_y = math.floor((coords.camera.y - margin * cell_size) / cell_size) + 1
+    local max_y = math.floor((coords.camera.y + coords.screen.height + margin * cell_size) / cell_size) + 1
 
     -- Remove rows outside the bounds
     while grid_height > 0 and (grid_height < min_y or grid_height > max_y) do
@@ -240,8 +221,6 @@ function remove_out_of_bounds_cells(boat_x, boat_y)
     grid_width = #vector_field[1]
 end
 
-
-
 -- Function to add an obstruction
 function add_obstruction(mx, my, radius)
     table.insert(obstructions, {x = mx, y = my, radius = radius})
@@ -252,7 +231,6 @@ function update_obstruction_position(obs, mx, my)
     obs.x = mx
     obs.y = my
 end
-
 
 -- Function to draw the obstruction at the mouse position
 function draw_obstruction(mx, my)
