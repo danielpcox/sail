@@ -2,16 +2,17 @@
 include "/sail/vectors.lua"
 
 function make_boat(x, y)
- return {
-  pos=vec(x,y),
-  ang=0.25,
-  ang_prev=0.25,
-  v = vec(0, 0),
-  sail=0.6,
-  sail_prev=0.6,
-  sheet=-0.5,
-  rudder=0,
- }
+    return {
+        pos = { x = x, y = y },
+        prev_pos = { x = x, y = y },
+        v = { x = 0, y = 0 },
+        ang = 0,
+        ang_prev = 0,
+        sail = 0.5,
+        sail_prev = 0.5,
+        sheet = 0.5,
+        rudder = 0
+    }
 end
 
 function get_thrust(wind, sail, velocity, orientation)

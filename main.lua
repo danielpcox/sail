@@ -1,3 +1,4 @@
+--[[pod_format="raw",created="2024-08-12 23:30:47",modified="2024-08-12 23:30:47",revision=0]]
 include "/sail/wind/vector_field2.lua"
 include "/sail/wind/particle_draw.lua"
 include "/sail/vectors.lua"
@@ -61,7 +62,7 @@ function __update()
     boat.sail += (boat.sail - boat.sail_prev)
     boat.sail_prev = boat.sail
     assert(type(boat.sail) == "number", "Boat sail must be a number")
-    assert(boat.sail >= 0 and boat.sail <= 1, "Boat sail out of expected range")
+    assert(boat.sail >= 0 and boat.sail <= 2, "Boat sail out of expected range")
     assert(type(boat.sheet) == "number", "Boat sheet must be a number")
     assert(boat.sheet >= 0 and boat.sheet <= 1, "Boat sheet out of expected range")
    
@@ -74,7 +75,11 @@ function __update()
     update_vector_field()
 
     -- Update camera position based on boat position
-    update_camera(boat.pos)
+    update_camera(boat)
+
+    -- Store current position as previous position for the next frame
+    boat.prev_pos.x = boat.pos.x
+    boat.prev_pos.y = boat.pos.y
 end
 
 function draw_boat()
@@ -89,29 +94,30 @@ function draw_boat()
 end
 
 function draw_world_grid()
-    local screen_x = coords.camera.x
-    local screen_y = coords.camera.y
+    local camera_x = coords.camera.x
+    local camera_y = coords.camera.y
     local screen_width = coords.screen.width
     local screen_height = coords.screen.height
 
     -- Calculate the range of world coordinates that are visible on the screen
-    local min_world_x = math.floor(screen_x / cell_size) * cell_size
-    local max_world_x = math.ceil((screen_x + screen_width) / cell_size) * cell_size
-    local min_world_y = math.floor(screen_y / cell_size) * cell_size
-    local max_world_y = math.ceil((screen_y + screen_height) / cell_size) * cell_size
+    local min_world_x = math.floor(camera_x / cell_size) * cell_size
+    local max_world_x = math.ceil((camera_x + screen_width) / cell_size) * cell_size
+    local min_world_y = math.floor(camera_y / cell_size) * cell_size
+    local max_world_y = math.ceil((camera_y + screen_height) / cell_size) * cell_size
 
     -- Draw vertical grid lines
     for x = min_world_x, max_world_x, cell_size do
-        local screen_x, _ = world_to_screen_coords(x, 0, screen_x, screen_y)
-        line(screen_x, 0, screen_x, screen_height, 7) -- Draw vertical line
+        local screen_x = x - camera_x
+        line(screen_x, camera_y, screen_x, screen_height, 7) -- Draw vertical line
     end
 
     -- Draw horizontal grid lines
     for y = min_world_y, max_world_y, cell_size do
-        local _, screen_y = world_to_screen_coords(0, y, screen_x, screen_y)
-        line(0, screen_y, screen_width, screen_y, 7) -- Draw horizontal line
+        local screen_y = y - camera_y
+        line(camera_x, screen_y, screen_width, screen_y, 7) -- Draw horizontal line
     end
 end
+
 
 function __draw()
     cls()
@@ -123,8 +129,10 @@ function __draw()
     -- Draw a rectangle filling the screen, using world coordinates
     rectfill(boat.pos.x - coords.screen.width / 2, boat.pos.y - coords.screen.height / 2, boat.pos.x + coords.screen.width / 2, boat.pos.y + coords.screen.height / 2, Colors.dark_blue)
 
-    draw_vector_field()
-    draw_world_grid()
+    print("0,0", 0, 0, 7)
+    print(roundToDecimalPlaces(boat.pos.x, 0)..roundToDecimalPlaces(boat.pos.y, 0), boat.pos.x, boat.pos.y, 7)
 
+    draw_world_grid()
+    draw_vector_field()
     draw_boat()
 end

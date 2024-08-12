@@ -33,9 +33,12 @@ function screen_to_world_coords(screen_x, screen_y, camera_x, camera_y)
 end
 
 -- Update camera position to follow the player
-function update_camera(boat_pos)
-    coords.camera.x = boat_pos.x - coords.screen.width / 2
-    coords.camera.y = boat_pos.y - coords.screen.height / 2
+function update_camera(boat)
+    local dx = boat.pos.x - boat.prev_pos.x
+    local dy = boat.pos.y - boat.prev_pos.y
+
+    coords.camera.x = coords.camera.x + dx
+    coords.camera.y = coords.camera.y + dy
 end
 
 -- Update coordinate offsets based on boat position
@@ -45,6 +48,6 @@ function update_coord_offsets(boat_pos)
     coords.world.y = boat_pos.y
     
     -- Update screen coordinates to center on the boat's position
-    coords.screen.x = boat_pos.x - coords.screen.width / 2
-    coords.screen.y = boat_pos.y - coords.screen.height / 2
+    -- coords.screen.x = boat_pos.x - coords.camera.x
+    -- coords.screen.y = boat_pos.y - coords.camera.y
 end

@@ -14,6 +14,8 @@ local base_intensity = 1.5
 
 -- List to store obstructions
 obstructions = {}
+-- List to store low-wind zones
+low_wind_zones = {}
 
 -- Define the grid size
 local margin = 5 -- Number of cells to keep as a buffer around the visible area
@@ -36,8 +38,8 @@ end
 
 -- Function to draw the vector field
 function draw_vector_field()
-    local cam_x = coords.camera.x
-    local cam_y = coords.camera.y
+    local cam_x = coords.screen.x
+    local cam_y = coords.screen.y
 
     -- Calculate the range of grid cells that are visible on the screen
     local min_grid_x = math.floor(cam_x / cell_size) + 1
@@ -121,6 +123,8 @@ function apply_wind_shadow(obs, wind_direction)
     end
 end
 
+-- vector_field2.lua
+
 function update_vector_field()
     local time = t() * 0.1
     local noise_value_direction = perlin:noise(time, 0)
@@ -167,6 +171,34 @@ function update_vector_field()
     -- Apply wind shadow effects from obstructions
     for _, obs in ipairs(obstructions) do
         apply_wind_shadow(obs, {x = math.cos(current_direction), y = math.sin(current_direction)})
+    end
+
+    -- Apply low-wind zones
+    for _, zone in ipairs(low_wind_zones) do
+        apply_low_wind_zone(zone)
+    end
+end
+
+-- Function to apply low-wind zones
+function apply_low_wind_zone(zone)
+    local min_grid_x = math.floor(zone.x / cell_size) + 1
+    local max_grid_x = math.floor((zone.x + zone.width) / cell_size) + 1
+    local min_grid_y = math.floor(zone.y / cell_size) + 1
+    local max_grid_y = math.floor((zone.y + zone.height) / cell_size) + 1
+
+    -- Ensure the grid coordinates are within bounds
+    min_grid_x = math.max(min_grid_x, 1)
+    max_grid_x = math.min(max_grid_x, grid_width)
+    min_grid_y = math.max(min_grid_y, 1)
+    max_grid_y = math.min(max_grid_y, grid_height)
+
+    -- Apply damping factor to the wind vectors inside the zone
+    for grid_y = min_grid_y, max_grid_y do
+        for grid_x = min_grid_x, max_grid_x do
+            local vec = vector_field[grid_y][grid_x]
+            vec.x = vec.x * zone.damping_factor
+            vec.y = vec.y * zone.damping_factor
+        end
     end
 end
 
@@ -236,4 +268,40 @@ end
 function draw_obstruction(mx, my)
     circfill(mx, my, cell_size / 2, 8) -- Draw a circle to indicate the obstruction
     add_obstruction(mx, my, 3) -- Add obstruction to the list
+end
+
+
+-- Function to add a low-wind zone
+function add_low_wind_zone(x, y, width, height, damping_factor)
+    table.insert(low_wind_zones, {
+        x = x,
+        y = y,
+        width = width,
+        height = height,
+        damping_factor = damping_factor
+    })
+end
+
+
+-- Function to apply low-wind zones
+function apply_low_wind_zone(zone)
+    local min_grid_x = math.floor(zone.x / cell_size) + 1
+    local max_grid_x = math.floor((zone.x + zone.width) / cell_size) + 1
+    local min_grid_y = math.floor(zone.y / cell_size) + 1
+    local max_grid_y = math.floor((zone.y + zone.height) / cell_size) + 1
+
+    -- Ensure the grid coordinates are within bounds
+    min_grid_x = math.max(min_grid_x, 1)
+    max_grid_x = math.min(max_grid_x, grid_width)
+    min_grid_y = math.max(min_grid_y, 1)
+    max_grid_y = math.min(max_grid_y, grid_height)
+
+    -- Apply damping factor to the wind vectors inside the zone
+    for grid_y = min_grid_y, max_grid_y do
+        for grid_x = min_grid_x, max_grid_x do
+            local vec = vector_field[grid_y][grid_x]
+            vec.x = vec.x * zone.damping_factor
+            vec.y = vec.y * zone.damping_factor
+        end
+    end
 end
