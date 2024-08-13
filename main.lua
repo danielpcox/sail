@@ -94,7 +94,7 @@ function draw_boat()
 end
 
 function draw_world_grid()
-    local insetted_coords = inset_coords(coords.screen, 100)
+    local insetted_coords = inset_coords(coords.screen, 80)
     local top = insetted_coords.top
     local left = insetted_coords.left
     local right = insetted_coords.right
@@ -109,13 +109,13 @@ function draw_world_grid()
     -- Draw vertical grid lines
     for x = min_world_grid_x, max_world_grid_x, cell_size do
         local screen_x = x
-        line(screen_x, min_world_grid_y, screen_x, max_world_grid_y, 3) -- Draw vertical line
+        line(screen_x, min_world_grid_y, screen_x, max_world_grid_y, Colors.blue) -- Draw vertical line
     end
 
     -- Draw horizontal grid lines
     for y = min_world_grid_y, max_world_grid_y, cell_size do
         local screen_y = y
-        line(min_world_grid_x, screen_y, max_world_grid_x, screen_y, 3) -- Draw horizontal line
+        line(min_world_grid_x, screen_y, max_world_grid_x, screen_y, Colors.blue) -- Draw horizontal line
     end
 end
 
