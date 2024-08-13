@@ -34,31 +34,21 @@ end
 
 -- Function to draw the vector field
 function draw_vector_field()
-    local ins = 40 -- Inset margin for drawing
+    local ins = 0 -- Inset margin for drawing
 
-    -- Adjust camera position based on inset margin
-    local camera_x = coords.screen.x + ins
-    local camera_y = coords.screen.y + ins
-    local screen_width = coords.screen.width - (ins * 2)
-    local screen_height = coords.screen.height - (ins * 2)
+    local top = coords.screen.top + ins
+    local left = coords.screen.left + ins
+    local right = coords.screen.right - (ins * 2)
+    local bottom = coords.screen.bottom - (ins * 2)
 
-    -- Draw outer rectangle to frame the visible game world area
-    rect(camera_x, camera_y, camera_x + screen_width, camera_y + screen_height, 6)
-
-    -- Calculate the range of world coordinates that are visible on the screen
-    local min_world_x = camera_x
-    local max_world_x = camera_x + screen_width
-    local min_world_y = camera_y
-    local max_world_y = camera_y + screen_height
-
-    -- Draw inner rectangle slightly inset from the outer rectangle
-    rect(min_world_x + 4, min_world_y + 4, max_world_x - 4, max_world_y - 4, 6)
+    rect(left, top, right, bottom, 6)
+    rect(left + 4, top + 4, right - 4, bottom - 4, 6)
 
     -- Calculate the range of world grid coordinates that are visible on the screen
-    local min_world_grid_x = math.floor(min_world_x / cell_size) * cell_size
-    local max_world_grid_x = math.ceil(max_world_x / cell_size) * cell_size
-    local min_world_grid_y = math.floor(min_world_y / cell_size) * cell_size
-    local max_world_grid_y = math.ceil(max_world_y / cell_size) * cell_size
+    local min_world_grid_x = math.floor(left   / cell_size) * cell_size
+    local max_world_grid_x = math.ceil( right  / cell_size) * cell_size
+    local min_world_grid_y = math.floor(top    / cell_size) * cell_size
+    local max_world_grid_y = math.ceil( bottom / cell_size) * cell_size
 
     -- Draw rectangle describing the visible grid cells in the world space
     rect(min_world_grid_x, min_world_grid_y, max_world_grid_x, max_world_grid_y, 6)
@@ -74,7 +64,7 @@ function draw_vector_field()
                 local vec = vector_field[grid_y][grid_x]
 
                 -- Convert world coordinates to screen coordinates
-                local screen_x, screen_y = world_to_screen_coords(world_x, world_y, coords.screen.x, coords.screen.y)
+                local screen_x, screen_y = world_to_screen_coords(world_x, world_y)
                 local end_x = screen_x + vec.x * cell_size / 2
                 local end_y = screen_y + vec.y * cell_size / 2
                 local color = 7

@@ -20,16 +20,16 @@ coords = {
 }
 
 -- Convert world coordinates to screen coordinates
-function world_to_screen_coords(world_x, world_y, camera_x, camera_y)
-    local screen_x = world_x - camera_x
-    local screen_y = world_y - camera_y
+function world_to_screen_coords(world_x, world_y)
+    local screen_x = world_x + coords.screen.x
+    local screen_y = world_y + coords.screen.y
     return screen_x, screen_y
 end
 
 -- Convert screen coordinates to world coordinates
-function screen_to_world_coords(screen_x, screen_y, camera_x, camera_y)
-    local world_x = screen_x + camera_x
-    local world_y = screen_y + camera_y
+function screen_to_world_coords(screen_x, screen_y)
+    local world_x = screen_x - coords.screen.x
+    local world_y = screen_y - coords.screen.y
     return world_x, world_y
 end
 
@@ -40,8 +40,8 @@ function update_screen_pos(boat)
     coords.screen.y = boat.pos.y - screen_height / 2
     coords.screen.cx = coords.screen.x + screen_width / 2
     coords.screen.cy = coords.screen.y + screen_height / 2
-    coords.screen.top = boat.pos.x - screen_width / 2
-    coords.screen.left = boat.pos.y - screen_height / 2
+    coords.screen.top = boat.pos.y - screen_height / 2
+    coords.screen.left = boat.pos.x - screen_width / 2
     coords.screen.right = boat.pos.x + screen_width / 2
     coords.screen.bottom = boat.pos.y + screen_height / 2
 end

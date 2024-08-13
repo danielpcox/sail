@@ -87,10 +87,10 @@ function draw_boat()
     show(scale(10, orientation), boat.pos.x, boat.pos.y, 4)
     show(scale(7, sail),        boat.pos.x + 10 * orientation.x, boat.pos.y + 10 * orientation.y, 6)
     -- 
-    show(scale(10, thrust),     coords.screen.x + 10, coords.screen.y + 10 * 1, 3)
-    show(scale(10, pull_force), coords.screen.x + 10, coords.screen.y + 10 * 2, 8)
-    show(scale(10, push_force), coords.screen.x + 10, coords.screen.y + 10 * 3, 9)
-    show(scale(10, apparent),   coords.screen.x + 10, coords.screen.y + 10 * 4, 28)
+    show(scale(10, thrust),     coords.screen.left + 10, coords.screen.top + 10 * 1, 3)
+    show(scale(10, pull_force), coords.screen.left + 10, coords.screen.top + 10 * 2, 8)
+    show(scale(10, push_force), coords.screen.left + 10, coords.screen.top + 10 * 3, 9)
+    show(scale(10, apparent),   coords.screen.left + 10, coords.screen.top + 10 * 4, 28)
 end
 
 function draw_world_grid()
