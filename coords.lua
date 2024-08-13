@@ -1,20 +1,21 @@
--- coords.lua
 local screen_width = 480
 local screen_height = 270
 
 -- Initialize coordinate offsets and screen coordinates
 coords = {
-    camera = {
-        x = 0,
-        y = 0
-    },
+    -- screen coordinates are the coordinates
+    -- in world space that are visible onscreen
     screen = {
         x = 0,
         y = 0,
+        top = 0,
+        left = 0,
+        right = screen_width,
+        bottom = screen_height,
         width = screen_width,
         height = screen_height,
-        cx = math.floor(screen_width / 2),
-        cy = math.floor(screen_height / 2)
+        cx = math.floor(screen_width / 2), -- Center X coordinate of the screen
+        cy = math.floor(screen_height / 2) -- Center Y coordinate of the screen
     }
 }
 
@@ -33,21 +34,14 @@ function screen_to_world_coords(screen_x, screen_y, camera_x, camera_y)
 end
 
 -- Update camera position to follow the player
-function update_camera(boat)
-    local dx = boat.pos.x - boat.prev_pos.x
-    local dy = boat.pos.y - boat.prev_pos.y
-
-    coords.camera.x = coords.camera.x + dx
-    coords.camera.y = coords.camera.y + dy
-end
-
--- Update coordinate offsets based on boat position
-function update_coord_offsets(boat_pos)
-    -- Update world coordinates based on boat position
-    coords.world.x = boat_pos.x
-    coords.world.y = boat_pos.y
-    
-    -- Update screen coordinates to center on the boat's position
-    -- coords.screen.x = boat_pos.x - coords.camera.x
-    -- coords.screen.y = boat_pos.y - coords.camera.y
+function update_screen_pos(boat)
+    -- update position of the camera object
+    coords.screen.x = boat.pos.x - screen_width / 2
+    coords.screen.y = boat.pos.y - screen_height / 2
+    coords.screen.cx = coords.screen.x + screen_width / 2
+    coords.screen.cy = coords.screen.y + screen_height / 2
+    coords.screen.top = boat.pos.x - screen_width / 2
+    coords.screen.left = boat.pos.y - screen_height / 2
+    coords.screen.right = boat.pos.x + screen_width / 2
+    coords.screen.bottom = boat.pos.y + screen_height / 2
 end

@@ -75,7 +75,7 @@ function __update()
     update_vector_field()
 
     -- Update camera position based on boat position
-    update_camera(boat)
+    update_screen_pos(boat)
 
     -- Store current position as previous position for the next frame
     boat.prev_pos.x = boat.pos.x
@@ -87,17 +87,17 @@ function draw_boat()
     show(scale(10, orientation), boat.pos.x, boat.pos.y, 4)
     show(scale(7, sail),        boat.pos.x + 10 * orientation.x, boat.pos.y + 10 * orientation.y, 6)
     -- 
-    show(scale(10, thrust),     coords.camera.x + 10, coords.camera.y + 10 * 1, 3)
-    show(scale(10, pull_force), coords.camera.x + 10, coords.camera.y + 10 * 2, 8)
-    show(scale(10, push_force), coords.camera.x + 10, coords.camera.y + 10 * 3, 9)
-    show(scale(10, apparent),   coords.camera.x + 10, coords.camera.y + 10 * 4, 28)
+    show(scale(10, thrust),     coords.screen.x + 10, coords.screen.y + 10 * 1, 3)
+    show(scale(10, pull_force), coords.screen.x + 10, coords.screen.y + 10 * 2, 8)
+    show(scale(10, push_force), coords.screen.x + 10, coords.screen.y + 10 * 3, 9)
+    show(scale(10, apparent),   coords.screen.x + 10, coords.screen.y + 10 * 4, 28)
 end
 
 function draw_world_grid()
     local ins = 20
 
-    local camera_x = coords.camera.x + ins
-    local camera_y = coords.camera.y + ins
+    local camera_x = coords.screen.x + ins
+    local camera_y = coords.screen.y + ins
     local screen_width = coords.screen.width - (ins * 2)
     local screen_height = coords.screen.height - (ins * 2)
 
@@ -132,13 +132,13 @@ function __draw()
     local boat = boats[1]
 
     -- Center the camera on the boat using updated camera coordinates
-    camera(coords.camera.x, coords.camera.y)
+    camera(coords.screen.x, coords.screen.y)
     
     -- Draw a rectangle filling the screen, using world coordinates
-    rectfill(boat.pos.x - coords.screen.width / 2, boat.pos.y - coords.screen.height / 2, boat.pos.x + coords.screen.width / 2, boat.pos.y + coords.screen.height / 2, Colors.dark_blue)
+    rectfill(coords.screen.x, coords.screen.y, coords.screen.right, coords.screen.bottom, Colors.dark_blue)
 
     print("0,0", 0, 0, 7)
-    print(roundToDecimalPlaces(boat.pos.x, 0)..roundToDecimalPlaces(boat.pos.y, 0), boat.pos.x, boat.pos.y, 7)
+    print(roundToDecimalPlaces(coords.screen.x, 0)..roundToDecimalPlaces(coords.screen.y, 0), coords.screen.x, coords.screen.y, 7)
 
     draw_world_grid()
     draw_vector_field()

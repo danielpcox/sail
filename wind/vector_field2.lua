@@ -1,9 +1,5 @@
--- vector_field2.lua
 include "/sail/wind/perlin.lua"
 include "/sail/coords.lua"
-include "/sail/wind/perlin.lua"
-include "/sail/coords.lua"
-
 
 -- Initialize the Perlin noise generator
 local perlin = Perlin:new(time())
@@ -38,35 +34,56 @@ end
 
 -- Function to draw the vector field
 function draw_vector_field()
-    local cam_x = coords.screen.x
-    local cam_y = coords.screen.y
+    local ins = 40 -- Inset margin for drawing
 
-    -- Calculate the range of grid cells that are visible on the screen
-    local min_grid_x = math.floor(cam_x / cell_size) + 1
-    local max_grid_x = math.floor((cam_x + coords.screen.width) / cell_size) + 1
-    local min_grid_y = math.floor(cam_y / cell_size) + 1
-    local max_grid_y = math.floor((cam_y + coords.screen.width) / cell_size) + 1
+    -- Adjust camera position based on inset margin
+    local camera_x = coords.screen.x + ins
+    local camera_y = coords.screen.y + ins
+    local screen_width = coords.screen.width - (ins * 2)
+    local screen_height = coords.screen.height - (ins * 2)
 
-    -- Ensure the grid coordinates are within bounds
-    min_grid_x = math.max(min_grid_x, 1)
-    max_grid_x = math.min(max_grid_x, grid_width)
-    min_grid_y = math.max(min_grid_y, 1)
-    max_grid_y = math.min(max_grid_y, grid_height)
+    -- Draw outer rectangle to frame the visible game world area
+    rect(camera_x, camera_y, camera_x + screen_width, camera_y + screen_height, 6)
+
+    -- Calculate the range of world coordinates that are visible on the screen
+    local min_world_x = camera_x
+    local max_world_x = camera_x + screen_width
+    local min_world_y = camera_y
+    local max_world_y = camera_y + screen_height
+
+    -- Draw inner rectangle slightly inset from the outer rectangle
+    rect(min_world_x + 4, min_world_y + 4, max_world_x - 4, max_world_y - 4, 6)
+
+    -- Calculate the range of world grid coordinates that are visible on the screen
+    local min_world_grid_x = math.floor(min_world_x / cell_size) * cell_size
+    local max_world_grid_x = math.ceil(max_world_x / cell_size) * cell_size
+    local min_world_grid_y = math.floor(min_world_y / cell_size) * cell_size
+    local max_world_grid_y = math.ceil(max_world_y / cell_size) * cell_size
+
+    -- Draw rectangle describing the visible grid cells in the world space
+    rect(min_world_grid_x, min_world_grid_y, max_world_grid_x, max_world_grid_y, 6)
 
     -- Iterate over the visible grid cells
-    for grid_y = min_grid_y, max_grid_y do
-        for grid_x = min_grid_x, max_grid_x do
-            local vec = vector_field[grid_y][grid_x]
-            local world_x = (grid_x - 1) * cell_size
-            local world_y = (grid_y - 1) * cell_size
-            local screen_x, screen_y = world_to_screen_coords(world_x, world_y, cam_x, cam_y)
-            local end_x = screen_x + vec.x * cell_size / 2
-            local end_y = screen_y + vec.y * cell_size / 2
-            local color = 7
-            if vec.x == 0 and vec.y == 0 then
-                color = 8 -- Highlight the shadowed area
+    for world_y = min_world_grid_y, max_world_grid_y, cell_size do
+        for world_x = min_world_grid_x, max_world_grid_x, cell_size do
+            local grid_x = math.floor(world_x / cell_size) + 1
+            local grid_y = math.floor(world_y / cell_size) + 1
+
+            -- Ensure the grid coordinates are within bounds
+            if grid_x >= 1 and grid_x <= grid_width and grid_y >= 1 and grid_y <= grid_height then
+                local vec = vector_field[grid_y][grid_x]
+
+                -- Convert world coordinates to screen coordinates
+                local screen_x, screen_y = world_to_screen_coords(world_x, world_y, coords.screen.x, coords.screen.y)
+                local end_x = screen_x + vec.x * cell_size / 2
+                local end_y = screen_y + vec.y * cell_size / 2
+                local color = 7
+                if vec.x == 0 and vec.y == 0 then
+                    color = 8 -- Highlight the shadowed area
+                end
+
+                line(screen_x, screen_y, end_x, end_y, color) -- Draw the vector as a line
             end
-            line(screen_x, screen_y, end_x, end_y, color) -- Draw the vector as a line
         end
     end
 end
@@ -86,6 +103,7 @@ function get_wind_at(world_x, world_y)
     return vector_field[grid_y][grid_x]
 end
 
+-- Function to apply wind shadow effect from obstructions
 function apply_wind_shadow(obs, wind_direction)
     local grid_x = math.floor(obs.x / cell_size) + 1
     local grid_y = math.floor(obs.y / cell_size) + 1
@@ -123,8 +141,7 @@ function apply_wind_shadow(obs, wind_direction)
     end
 end
 
--- vector_field2.lua
-
+-- Function to update the vector field
 function update_vector_field()
     local time = t() * 0.1
     local noise_value_direction = perlin:noise(time, 0)
@@ -136,8 +153,8 @@ function update_vector_field()
     local current_intensity = base_intensity * intensity_variation
 
     -- Extend the vector field if the boat is near the edge
-    local grid_x = math.floor(coords.camera.x / cell_size) + 1
-    local grid_y = math.floor(coords.camera.y / cell_size) + 1
+    local grid_x = math.floor(coords.screen.x / cell_size) + 1
+    local grid_y = math.floor(coords.screen.y / cell_size) + 1
 
     local extend_margin = margin -- Number of cells to extend when near the edge
 
@@ -202,6 +219,7 @@ function apply_low_wind_zone(zone)
     end
 end
 
+-- Function to extend the vector field in a given direction
 function extend_vector_field(direction)
     if direction == "left" then
         for y = 1, grid_height do
@@ -230,11 +248,12 @@ function extend_vector_field(direction)
     end
 end
 
+-- Function to remove out-of-bounds cells from the vector field
 function remove_out_of_bounds_cells()
-    local min_x = math.floor((coords.camera.x - margin * cell_size) / cell_size) + 1
-    local max_x = math.floor((coords.camera.x + coords.screen.width + margin * cell_size) / cell_size) + 1
-    local min_y = math.floor((coords.camera.y - margin * cell_size) / cell_size) + 1
-    local max_y = math.floor((coords.camera.y + coords.screen.height + margin * cell_size) / cell_size) + 1
+    local min_x = math.floor((coords.screen.x - margin * cell_size) / cell_size) + 1
+    local max_x = math.floor((coords.screen.x + coords.screen.width + margin * cell_size) / cell_size) + 1
+    local min_y = math.floor((coords.screen.y - margin * cell_size) / cell_size) + 1
+    local max_y = math.floor((coords.screen.y + coords.screen.height + margin * cell_size) / cell_size) + 1
 
     -- Remove rows outside the bounds
     while grid_height > 0 and (grid_height < min_y or grid_height > max_y) do
@@ -270,7 +289,6 @@ function draw_obstruction(mx, my)
     add_obstruction(mx, my, 3) -- Add obstruction to the list
 end
 
-
 -- Function to add a low-wind zone
 function add_low_wind_zone(x, y, width, height, damping_factor)
     table.insert(low_wind_zones, {
@@ -281,7 +299,6 @@ function add_low_wind_zone(x, y, width, height, damping_factor)
         damping_factor = damping_factor
     })
 end
-
 
 -- Function to apply low-wind zones
 function apply_low_wind_zone(zone)
