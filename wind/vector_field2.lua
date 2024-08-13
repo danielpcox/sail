@@ -34,12 +34,11 @@ end
 
 -- Function to draw the vector field
 function draw_vector_field()
-    local ins = 0 -- Inset margin for drawing
-
-    local top = coords.screen.top + ins
-    local left = coords.screen.left + ins
-    local right = coords.screen.right - (ins * 2)
-    local bottom = coords.screen.bottom - (ins * 2)
+    local insetted_coords = inset_coords(coords.screen, 10)
+    local top = insetted_coords.top
+    local left = insetted_coords.left
+    local right = insetted_coords.right
+    local bottom = insetted_coords.bottom
 
     rect(left, top, right, bottom, 6)
     rect(left + 4, top + 4, right - 4, bottom - 4, 6)
@@ -143,8 +142,8 @@ function update_vector_field()
     local current_intensity = base_intensity * intensity_variation
 
     -- Extend the vector field if the boat is near the edge
-    local grid_x = math.floor(coords.screen.x / cell_size) + 1
-    local grid_y = math.floor(coords.screen.y / cell_size) + 1
+    local grid_x = math.floor(coords.screen.left / cell_size) + 1
+    local grid_y = math.floor(coords.screen.top / cell_size) + 1
 
     local extend_margin = margin -- Number of cells to extend when near the edge
 
@@ -240,10 +239,10 @@ end
 
 -- Function to remove out-of-bounds cells from the vector field
 function remove_out_of_bounds_cells()
-    local min_x = math.floor((coords.screen.x - margin * cell_size) / cell_size) + 1
-    local max_x = math.floor((coords.screen.x + coords.screen.width + margin * cell_size) / cell_size) + 1
-    local min_y = math.floor((coords.screen.y - margin * cell_size) / cell_size) + 1
-    local max_y = math.floor((coords.screen.y + coords.screen.height + margin * cell_size) / cell_size) + 1
+    local min_x = math.floor((coords.screen.left- margin * cell_size) / cell_size) + 1
+    local max_x = math.floor((coords.screen.left + coords.screen.width + margin * cell_size) / cell_size) + 1
+    local min_y = math.floor((coords.screen.top - margin * cell_size) / cell_size) + 1
+    local max_y = math.floor((coords.screen.top + coords.screen.height + margin * cell_size) / cell_size) + 1
 
     -- Remove rows outside the bounds
     while grid_height > 0 and (grid_height < min_y or grid_height > max_y) do

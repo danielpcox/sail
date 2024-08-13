@@ -94,51 +94,43 @@ function draw_boat()
 end
 
 function draw_world_grid()
-    local ins = 20
+    local insetted_coords = inset_coords(coords.screen, 100)
+    local top = insetted_coords.top
+    local left = insetted_coords.left
+    local right = insetted_coords.right
+    local bottom = insetted_coords.bottom
 
-    local camera_x = coords.screen.x + ins
-    local camera_y = coords.screen.y + ins
-    local screen_width = coords.screen.width - (ins * 2)
-    local screen_height = coords.screen.height - (ins * 2)
-
-    -- Calculate the range of WORLD coordinates that are visible on the screen
-    local min_world_x = camera_x
-    local max_world_x = camera_x + screen_width
-    local min_world_y = camera_y
-    local max_world_y = camera_y + screen_height
-    
-    -- Calculate the range of WORLD GRID coordinates that are visible on the screen
-    local min_world_grid_x = math.floor(min_world_x / cell_size) * cell_size
-    local max_world_grid_x = math.ceil(max_world_x / cell_size) * cell_size
-    local min_world_grid_y = math.floor(min_world_y / cell_size) * cell_size
-    local max_world_grid_y = math.ceil(max_world_y / cell_size) * cell_size
+    -- Calculate the range of GRID coordinates that are visible on the screen
+    local min_world_grid_x = math.floor(left / cell_size) * cell_size
+    local max_world_grid_x = math.ceil(right / cell_size) * cell_size
+    local min_world_grid_y = math.floor(top / cell_size) * cell_size
+    local max_world_grid_y = math.ceil(bottom / cell_size) * cell_size
 
     -- Draw vertical grid lines
     for x = min_world_grid_x, max_world_grid_x, cell_size do
         local screen_x = x
-        line(screen_x, camera_y, screen_x, max_world_grid_y, 0) -- Draw vertical line
+        line(screen_x, min_world_grid_y, screen_x, max_world_grid_y, 3) -- Draw vertical line
     end
 
     -- Draw horizontal grid lines
     for y = min_world_grid_y, max_world_grid_y, cell_size do
         local screen_y = y
-        line(camera_x, screen_y, max_world_grid_x, screen_y, 0) -- Draw horizontal line
+        line(min_world_grid_x, screen_y, max_world_grid_x, screen_y, 3) -- Draw horizontal line
     end
 end
-
 
 function __draw()
     cls()
     local boat = boats[1]
 
     -- Center the camera on the boat using updated camera coordinates
-    camera(coords.screen.x, coords.screen.y)
+    camera(coords.screen.left, coords.screen.top)
     
     -- Draw a rectangle filling the screen, using world coordinates
-    rectfill(coords.screen.x, coords.screen.y, coords.screen.right, coords.screen.bottom, Colors.dark_blue)
+    rectfill(coords.screen.left, coords.screen.top, coords.screen.right, coords.screen.bottom, Colors.dark_blue)
 
     print("0,0", 0, 0, 7)
-    print(roundToDecimalPlaces(coords.screen.x, 0)..roundToDecimalPlaces(coords.screen.y, 0), coords.screen.x, coords.screen.y, 7)
+    print(roundToDecimalPlaces(coords.screen.cx, 0)..roundToDecimalPlaces(coords.screen.cy, 0), coords.screen.cx + 20, coords.screen.cy + 20, 7)
 
     draw_world_grid()
     draw_vector_field()
